@@ -57,7 +57,6 @@ export default class AuthService {
             link: data.link,
             target: data.target,
             logo: data.logo,
-            bgImage: data.bgImage,
             about: data.about,
             overview: data.overview,
             application_deadline: data.deadline,
