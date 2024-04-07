@@ -1,0 +1,14 @@
+{
+  "resourceName": "benefistorage",
+  "policyUUID": "6288f24c",
+  "bucketName": "benefibackendv2cd5ab8b7d965462d89125e4306d1a1fa",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "S3Triggerff6d1df1",
+  "groupAccess": {}
+}
