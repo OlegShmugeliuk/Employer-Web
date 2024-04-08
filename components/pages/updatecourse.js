@@ -25,6 +25,7 @@ import { AuthContext } from '../../context/AuthContext';
 import AuthService from '../../ApiService/AuthService';
 import { errorNotify, successNotify } from '../notifications/notify';
 import CustomFileInput from './CustomFileInput';
+import Image from 'next/image';
 
 /**
  * 
@@ -681,7 +682,7 @@ export default function UpdateCourse(props) {
                     <Grid item xs={12} md={6}>
                         <div style={{marginTop:'24px', textAlign:'center', border: '1px solid #ccc', borderRadius: '2px'}}>
                             {image && (
-                                <img
+                                <Image
                                 src={image}
                                 className='inline-block'
                                 alt="Preview"
