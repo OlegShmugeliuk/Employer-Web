@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import Box from '@mui/material/Box';
-import TextField from '@mui/joy/TextField';
 import { CssVarsProvider } from '@mui/joy/styles';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
@@ -94,7 +93,7 @@ const ActivateUser = ({ activate, password, email, cancel, userId }) => {
                             code has been sent to {email}
                         </Typography>
                     </div>
-                    <TextField
+                    <Input
                         label="Code"
                         name="code"
                         type="number"

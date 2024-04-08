@@ -7,7 +7,7 @@ import {
     InputLabel,
     OutlinedInput,
     Button,
-    TextField,
+    Input,
     Select,
     MenuItem,
     Stack,
@@ -321,7 +321,7 @@ export default function AddEmployee(props) {
                                 value={startDate}
                                 onChange={handleChangeStartDate}
                                 renderInput={(params) => (
-                                    <TextField {...params} />
+                                    <Input {...params} />
                                 )}
                             />
                         </LocalizationProvider>

@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react';
 import Box from '@mui/material/Box';
-import TextField from '@mui/joy/TextField';
+import Input from '@mui/joy/Input';
 import { CssVarsProvider } from '@mui/joy/styles';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
-import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/joy/Link';
@@ -98,7 +97,7 @@ const ChangePassword = ({ activate, password, email, cancel, userId }) => {
                             Change password
                         </Typography>
                     </div>
-                    <TextField
+                    <Input
                         label="Password"
                         name="password"
                         type="password"
@@ -106,7 +105,7 @@ const ChangePassword = ({ activate, password, email, cancel, userId }) => {
                         onChange={(e) => setPrevPassword(e.target.value)}
                         onKeyDown={keyPress}
                     />
-                    <TextField
+                    <Input
                         label="New Password"
                         name="newPassword"
                         type="password"
@@ -114,7 +113,7 @@ const ChangePassword = ({ activate, password, email, cancel, userId }) => {
                         onChange={(e) => setNewPassword(e.target.value)}
                         onKeyDown={keyPress}
                     />
-                    <TextField
+                    <Input
                         label="Confirm New Password"
                         name="confirmNewPassword"
                         type="password"

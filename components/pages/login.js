@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { CssVarsProvider } from '@mui/joy/styles';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
-import TextField from '@mui/joy/TextField';
+import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/joy/Link';
@@ -144,7 +144,7 @@ const Login = () => {
                                     Please sign in to continue
                                 </Typography>
                             </div>
-                            <TextField
+                            <Input
                                 // html input attribute
                                 name="email"
                                 type="email"
@@ -154,7 +154,7 @@ const Login = () => {
                                 onKeyDown={keyPress}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
-                            <TextField
+                            <Input
                                 name="password"
                                 type="password"
                                 placeholder="password"

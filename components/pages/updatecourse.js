@@ -8,7 +8,7 @@ import {
     InputLabel,
     OutlinedInput,
     Button,
-    TextField,
+    Input,
     Select,
     MenuItem,
     Stack,
@@ -652,7 +652,7 @@ export default function UpdateCourse(props) {
                     <Grid item xs={12} md={6}>
                         <InputLabel shrink htmlFor="logo">Logo</InputLabel>
                         <FormControl fullWidth>
-                        <TextField
+                        <Input
                             label=""
                             type="file"
                             error={logoError}
@@ -668,7 +668,7 @@ export default function UpdateCourse(props) {
                         )}
                         {/* <InputLabel shrink htmlFor="logo">Logo</InputLabel>                       
                         <FormControl fullWidth>
-                            <TextField
+                            <Input
                                 fullWidth
                                 id="logo"
                                 type="file"
@@ -737,7 +737,7 @@ export default function UpdateCourse(props) {
                                 value={startDate}
                                 onChange={handleChangeStartDate}
                                 renderInput={(params) => (
-                                    <TextField {...params} />
+                                    <Input {...params} />
                                 )}
                             />
                         </LocalizationProvider>

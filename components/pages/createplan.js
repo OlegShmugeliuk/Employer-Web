@@ -9,7 +9,6 @@ import {
     OutlinedInput,
     InputLabel,
     InputAdornment,
-    TextField,
     Stack,
     Select,
     MenuItem,
@@ -655,7 +654,7 @@ export default function CreatePlan(props) {
                                                 value={startDate}
                                                 onChange={handleStartDateChange}
                                                 renderInput={(params) => (
-                                                    <TextField
+                                                    <Input
                                                         {...params}
                                                         sx={{
                                                             width:
@@ -676,7 +675,7 @@ export default function CreatePlan(props) {
                                                 value={endDate}
                                                 onChange={handleEndDateChange}
                                                 renderInput={(params) => (
-                                                    <TextField
+                                                    <Input
                                                         {...params}
                                                         sx={{
                                                             width:

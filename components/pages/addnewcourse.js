@@ -8,7 +8,7 @@ import {
     InputLabel,
     OutlinedInput,
     Button,
-    TextField,
+    Input,
     Select,
     MenuItem,
     Stack,
@@ -589,7 +589,7 @@ export default function AddCourse(props) {
                     <Grid item xs={12} md={12}>
                         <InputLabel shrink htmlFor="logo">Logo</InputLabel>                       
                         <FormControl fullWidth>
-                            <TextField
+                            <Input
                                 fullWidth
                                 id="logo"
                                 type="file"
@@ -650,7 +650,7 @@ export default function AddCourse(props) {
                                 value={startDate}
                                 onChange={handleChangeStartDate}
                                 renderInput={(params) => (
-                                    <TextField {...params} />
+                                    <Input {...params} />
                                 )}
                             />
                         </LocalizationProvider>
