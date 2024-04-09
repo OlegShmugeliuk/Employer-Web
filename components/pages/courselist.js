@@ -43,7 +43,7 @@ export default function CourseList(props) {
 
     const { data: courses, refetch: coursesRefetch } = useQuery(
         'courses',
-        CourseService.getCourses
+        CourseService.getCoursesIdx
     );
 
     const { mutateAsync: deleteCourse, isSuccess: isCourseDeleted } =

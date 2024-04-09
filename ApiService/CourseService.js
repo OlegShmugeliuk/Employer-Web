@@ -7,6 +7,12 @@ export default class CourseService {
         return data;
     }
 
+    static async getCoursesIdx() {
+        const { data } = await api.get('/course/get_by_employer');
+        return data;
+    }
+    
+
     static async deleteCourse(id) {
         const { data } = await api.delete(`/course/${id}`);
         return data;

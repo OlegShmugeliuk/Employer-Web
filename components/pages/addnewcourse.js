@@ -13,6 +13,7 @@ import {
     MenuItem,
     Stack,
     FormHelperText,
+    TextField,
 } from '@mui/material';
 
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -653,7 +654,7 @@ export default function AddCourse(props) {
                                 value={startDate}
                                 onChange={handleChangeStartDate}
                                 renderInput={(params) => (
-                                    <Input {...params} />
+                                    <TextField {...params} />
                                 )}
                             />
                         </LocalizationProvider>
