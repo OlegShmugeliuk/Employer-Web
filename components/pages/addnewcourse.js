@@ -309,7 +309,7 @@ export default function AddCourse(props) {
         }
     
         try {
-            await axios.post(process.env.NEXT_PUBLIC_BACKEND_URL + 'course', formData, {
+            await axios.post(process.env.NEXT_PUBLIC_BACKEND_URL + '/course', formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             });            
             await props.coursesRefetch();
