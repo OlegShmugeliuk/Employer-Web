@@ -297,6 +297,7 @@ export default function AddCourse(props) {
             link: link,
             target: target,
             logo: logo,
+            employerId: user.id,
             about: about,
             overview: overview,
             application_deadline: deadline,
@@ -317,6 +318,8 @@ export default function AddCourse(props) {
         } catch (error) {
 
         }
+
+        console.log('employerId:', user.id);
 
         // await createCourse();
     }
