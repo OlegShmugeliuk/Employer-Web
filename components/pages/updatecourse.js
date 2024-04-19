@@ -95,26 +95,6 @@ export default function UpdateCourse(props) {
 
     const { mutateAsync: updateCourse, isLoading } = useMutation(
         async () => {
-            const upData = {
-                course_name: courseName,
-                degree_type: degreeType,
-                interest: interest,
-                institution: institution,
-                language: language,
-                delivery: delivery,
-                location: location,
-                duration: duration,
-                cost: cost,
-                link: link,
-                target: target,
-                logo: logo,
-                about: about,
-                overview: overview,
-                application_deadline: deadline,
-                start_date: startDate.toISOString().substring(0, 10),
-                tuition_and_fees: tuitionFee
-            };
-
             const formData = new FormData();
             const courseData = {
                 course_name: courseName,
@@ -140,7 +120,7 @@ export default function UpdateCourse(props) {
             }
         
             try {
-                await CourseService.updateCourse(courseId, upData);
+                await CourseService.updateCourse(courseId, formData);
                 await props.coursesRefetch();
                 successNotify('Course successfully created!');
                 props.setCourseModal(false);
