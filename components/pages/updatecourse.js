@@ -705,7 +705,7 @@ export default function UpdateCourse(props) {
                             )}
                         </FormControl>
                     </Grid>                    
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <InputLabel shrink htmlFor="logo">Logo</InputLabel>
                         <FormControl fullWidth>
                         <Input
@@ -734,8 +734,8 @@ export default function UpdateCourse(props) {
                         </FormControl>
                     </Grid>
                     
-                    <Grid item xs={12} md={6}>
-                        <div style={{marginTop:'24px', textAlign:'center', border: '1px solid #ccc', borderRadius: '2px'}}>
+                    <Grid item xs={12} md={4}>
+                        <div style={{marginTop:'24px', textAlign:'center', borderRadius: '2px'}}>
                             {image && (
                                 <img
                                 src={image}
@@ -746,7 +746,7 @@ export default function UpdateCourse(props) {
                             )}
                         </div>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="overview">
                                 Overview
@@ -765,7 +765,7 @@ export default function UpdateCourse(props) {
                             )}
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="deadline">
                                 Deadline
@@ -784,7 +784,7 @@ export default function UpdateCourse(props) {
                             )}
                         </FormControl>
                     </Grid>                    
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth error={startDateError}>
                             <InputLabel htmlFor="start-date"></InputLabel>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -809,7 +809,7 @@ export default function UpdateCourse(props) {
                             )}
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="tuitionfee">
                                 Tuition Fee

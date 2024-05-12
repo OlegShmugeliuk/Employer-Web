@@ -65,6 +65,7 @@ export default function AddCourse(props) {
     const [deadline, setDeadline] = React.useState('');
     const [startDate, setStartDate] = React.useState('');
     const [tuitionFee, setTuitionFee] = React.useState('');
+    const [image, setImage] = React.useState(null);
 
     const [courseNameError, setCourseNameError] = React.useState(false);
     const [degreeTypeError, setDegreeTypeError] = React.useState(false);
@@ -101,6 +102,22 @@ export default function AddCourse(props) {
     //         },
     //     }
     // );
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            if (typeof reader.result === "string") {
+                setImage(reader.result);                
+            }
+        };
+        if (file) {
+            reader.readAsDataURL(file);
+            setLogo(file);
+        } else {
+            setImage("");
+        }
+    };  
 
     const extractValuesAsString = (data) => {
         // Extract _id values from each object using map()
@@ -599,15 +616,17 @@ export default function AddCourse(props) {
                             )}
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={12}>
+                    <Grid item xs={12} md={4}>
                         <InputLabel shrink htmlFor="logo">Logo</InputLabel>                       
                         <FormControl fullWidth>
                             <Input
-                                fullWidth
-                                id="logo"
+                                label=""
                                 type="file"
                                 error={logoError}
-                                onChange={handleChangeLogo}
+                                onChange={handleImageChange}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}                            
                             />
                             {!!logoError && (
                                 <FormHelperText error id="logo-error">
@@ -615,8 +634,21 @@ export default function AddCourse(props) {
                                 </FormHelperText>
                             )}
                         </FormControl>
+                    </Grid>                    
+                    
+                    <Grid item xs={12} md={4}>
+                        <div style={{marginTop:'24px', textAlign:'center',  borderRadius: '2px'}}>
+                            {image && (
+                                <img
+                                src={image}
+                                className='inline-block'
+                                alt="Preview"
+                                style={{ width: 'auto', height: '47px'}}
+                                />
+                            )}
+                        </div>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="overview">
                                 Overview
@@ -635,7 +667,7 @@ export default function AddCourse(props) {
                             )}
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="deadline">
                                 Deadline
@@ -654,7 +686,7 @@ export default function AddCourse(props) {
                             )}
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth error={startDateError}>
                             <InputLabel htmlFor="start-date"></InputLabel>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -679,7 +711,7 @@ export default function AddCourse(props) {
                             )}
                         </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
                             <InputLabel htmlFor="tuitionfee">
                                 Tuition Fee
