@@ -14,6 +14,7 @@ import {
     Stack,
     FormHelperText,
     TextField,
+    Autocomplete
 } from '@mui/material';
 
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -24,7 +25,20 @@ import { useMutation, useQuery } from 'react-query';
 import CourseService from '../../ApiService/CourseService';
 import { AuthContext } from '../../context/AuthContext';
 import AuthService from '../../ApiService/AuthService';
+import EmployeeService from '../../ApiService/EmployeeService';
 import { errorNotify, successNotify } from '../notifications/notify';
+    
+const degreeOptions = [
+    { label: 'Certificate', value: 'Certificate' },
+    { label: 'Post-grad Certificate', value: 'Post-grad Certificate' },
+    { label: 'Bachelors', value: 'Bachelors' },
+    { label: 'Master', value: 'Master' }
+];
+
+const languageOptions = [
+    { label: 'English', value: 'English' },
+    { label: 'French', value: 'French' }
+];
 
 /**
  * 
@@ -35,10 +49,10 @@ import { errorNotify, successNotify } from '../notifications/notify';
 export default function AddCourse(props) {
     const { user } = React.useContext(AuthContext);
     const [courseName, setCourseName] = React.useState('');
-    const [degreeType, setDegreeType] = React.useState('');
+    const [degreeType, setDegreeType] = React.useState([]);
     const [interest, setInterest] = React.useState();
     const [institution, setInstitution] = React.useState();
-    const [language, setLanguage] = React.useState('');
+    const [language, setLanguage] = React.useState([]);
     const [delivery, setDelivery] = React.useState('');
     const [location, setLocation] = React.useState('');
     const [duration, setDuration] = React.useState('');
@@ -88,6 +102,16 @@ export default function AddCourse(props) {
     //     }
     // );
 
+    const extractValuesAsString = (data) => {
+        // Extract _id values from each object using map()
+        const valueArray = data.map((item) => item.value);
+    
+        // Join _id values into a comma-separated string using join()
+        const valueString = valueArray.join(', ');
+    
+        return valueString;
+    };
+
     function handleChangeCourseName(event) {
         if (event.target.value.length > 0) {
             setCourseNameError(false);
@@ -95,12 +119,12 @@ export default function AddCourse(props) {
         setCourseName(event.target.value);
     }
 
-    function handleChangeDegreeType(event) {
-        if (event.target.value.length > 0) {
-            setDegreeTypeError(false);
-        }
-        setDegreeType(event.target.value);
-    }
+    const handleChangeDegreeType = (value) => {
+        console.log(value);
+        setDegreeTypeError(false);
+        setDegreeType(value);
+        if (!value) return;
+    };
 
     function handleChangeInterest(event) {
         if (event.target.value.length > 0) {
@@ -114,14 +138,14 @@ export default function AddCourse(props) {
             setInstitutionError(false);
         }
         setInstitution(event.target.value);
-    }
+    }  
 
-    function handleChangeLanguage(event) {
-        if (event.target.value.length > 0) {
-            setLanguageError(false);
-        }
-        setLanguage(event.target.value);
-    }
+    const handleChangeLanguage = (value) => {
+        console.log(value);
+        setLanguageError(false);
+        setLanguage(value);
+        if (!value) return;
+    };
 
     function handleChangeDelivery(event) {
         if (event.target.value.length > 0) {
@@ -200,20 +224,21 @@ export default function AddCourse(props) {
         setDeadline(event.target.value);
     }
 
+    function handleChangeStartDate(newValue) {
+        if (!newValue) {
+            setStartDateError(true); // Set error if start date is empty
+        } else {
+            setStartDateError(false); // Clear error if start date is provided
+        }
+        setStartDate(newValue);
+    }
+
     function handleChangeTuitionFee(event) {
         if (event.target.value.length > 0) {
             setTuitionFeeError(false);
         }
         setTuitionFee(event.target.value);
     }
-
-    function handleChangeStartDate(newValue) {
-        setStartDate(newValue);
-    }
-
-    // function handleClose(event) {
-    //   props.setCourseModal(false)
-    // }
 
     async function handleSave(event) {
         console.log('In handleSave');
@@ -223,7 +248,7 @@ export default function AddCourse(props) {
             setCourseNameError(true);
             alert('Please enter a valid course name.');
             return;
-        } else if (!degreeType) {
+        } else if (!degreeType || degreeType.length === 0) {
             setDegreeTypeError(true);
             alert('Please enter a valid degree type.');
             return;
@@ -235,7 +260,7 @@ export default function AddCourse(props) {
             setInstitutionError(true);
             alert('Please enter a valid institution name.');
             return;
-        } else if (!language) {
+        } else if (!language || language.length === 0) {
             setLanguageError(true);
             alert('Please select a language.');
             return;
@@ -279,18 +304,24 @@ export default function AddCourse(props) {
             setDeadlineError(true);
             alert('Please enter deadline.');
             return;
+        } else if (!startDate) {
+            setStartDateError(true);
+            alert('Please enter start date.');
+            return;
         } else if (!tuitionFee) {
             setTuitionFeeError(true);
             alert('Please enter tuition fee.');
             return;
         }
         const formData = new FormData();
+        const degreeTypeString = degreeType ? extractValuesAsString(degreeType) : '';
+        const languageString = language ? extractValuesAsString(language) : '';
         const courseData = {
             course_name: courseName,
-            degree_type: degreeType,
+            degree_type: degreeTypeString,
             interest: interest,
             institution: institution,
-            language: language,
+            language: languageString,
             delivery: delivery,
             location: location,
             duration: duration,
@@ -350,47 +381,29 @@ export default function AddCourse(props) {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel htmlFor="degreetype">
-                                Degree Type
-                            </InputLabel>
-                            <Select
-                                labelid="degreetype"
-                                id="degreetype"
-                                value={degreeType}
-                                error={degreeTypeError}
-                                label="Degree Type"
-                                onChange={handleChangeDegreeType}
-                            >
-                                <MenuItem
-                                    key='Certificate' 
-                                    value='Certificate'
-                                >
-                                    Certificate
-                                </MenuItem>
-                                <MenuItem
-                                    key='Post-grad Certificate' 
-                                    value='Post-grad Certificate'
-                                >
-                                    Post-grad Certificate
-                                </MenuItem>
-                                <MenuItem
-                                    key='Bachelors' 
-                                    value='Bachelors'
-                                >
-                                    Bachelors
-                                </MenuItem>
-                                <MenuItem
-                                    key='Master' 
-                                    value='Master'
-                                >
-                                    Master
-                                </MenuItem>
-                            </Select>
+                            <Autocomplete
+                                multiple
+                                options={degreeOptions}
+                                value={degreeType} // Use state variable for controlled value
+                                onChange={(event, newValue) => {
+                                    handleChangeDegreeType(newValue); // Update state when selection changes
+                                }}
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="outlined"
+                                        label="Degrees Type"
+                                        placeholder="Start typing..."
+                                    />
+                                )}
+                                isOptionEqualToValue={(option, value) => option.value === value.value}
+                            />
                             {!!degreeTypeError && (
-                                <FormHelperText error id="dept-error">
-                                    Please select a degree type
+                                <FormHelperText error id="degreetype-error">
+                                    Please select at least one degree type
                                 </FormHelperText>
-                            )}
+                            )}                            
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -429,34 +442,30 @@ export default function AddCourse(props) {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel htmlFor="language">Language</InputLabel>
-                            <Select
-                                labelid="language"
-                                id="language"
-                                value={language}
-                                error={languageError}
-                                label="Language"
-                                onChange={handleChangeLanguage}
-                            >
-                                <MenuItem
-                                    key='English' 
-                                    value='English'
-                                >
-                                    English
-                                </MenuItem>
-                                <MenuItem
-                                    key='French' 
-                                    value='French'
-                                >
-                                    French
-                                </MenuItem>
-                            </Select>
+                            <Autocomplete
+                                multiple
+                                options={languageOptions}
+                                value={language} // Use state variable for controlled value
+                                onChange={(event, newValue) => {
+                                    handleChangeLanguage(newValue); // Update state when selection changes
+                                }}
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="outlined"
+                                        label="Language"
+                                        placeholder="Start typing..."
+                                    />
+                                )}
+                                isOptionEqualToValue={(option, value) => option.value === value.value}
+                            />
+                            {!!languageError && (
+                                <FormHelperText error id="language-error">
+                                    Please select language
+                                </FormHelperText>
+                            )}
                         </FormControl>
-                        {!!languageError && (
-                            <FormHelperText error id="language-error">
-                                Please select language
-                            </FormHelperText>
-                        )}
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
@@ -646,18 +655,29 @@ export default function AddCourse(props) {
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DesktopDatePicker
-                                variant="standard"
-                                label="Start Date"
-                                inputFormat="MM/dd/yyyy"
-                                value={startDate}
-                                onChange={handleChangeStartDate}
-                                renderInput={(params) => (
-                                    <TextField {...params} />
-                                )}
-                            />
-                        </LocalizationProvider>
+                        <FormControl fullWidth error={startDateError}>
+                            <InputLabel htmlFor="start-date"></InputLabel>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DesktopDatePicker
+                                    variant="standard"
+                                    label="Start Date"
+                                    inputFormat="MM/dd/yyyy"
+                                    value={startDate}
+                                    onChange={handleChangeStartDate}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            id="start-date" // Ensure this ID matches the htmlFor attribute of the InputLabel
+                                            sx={{ width: '100%' }}
+                                            error={startDateError}
+                                        />
+                                    )}
+                                />
+                            </LocalizationProvider>
+                            {startDateError && (
+                                <FormHelperText>Please enter a valid start date</FormHelperText>
+                            )}
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <FormControl fullWidth>

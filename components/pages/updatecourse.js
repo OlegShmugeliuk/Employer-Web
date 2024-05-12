@@ -13,6 +13,8 @@ import {
     MenuItem,
     Stack,
     FormHelperText,
+    TextField,
+    Autocomplete
 } from '@mui/material';
 
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -25,7 +27,18 @@ import { AuthContext } from '../../context/AuthContext';
 import AuthService from '../../ApiService/AuthService';
 import { errorNotify, successNotify } from '../notifications/notify';
 import CustomFileInput from './CustomFileInput';
-import Image from 'next/image';
+
+const degreeOptions = [
+    { label: 'Certificate', value: 'Certificate' },
+    { label: 'Post-grad Certificate', value: 'Post-grad Certificate' },
+    { label: 'Bachelors', value: 'Bachelors' },
+    { label: 'Master', value: 'Master' }
+];
+
+const languageOptions = [
+    { label: 'English', value: 'English' },
+    { label: 'French', value: 'French' }
+];
 
 /**
  * 
@@ -37,11 +50,12 @@ export default function UpdateCourse(props) {
     const data = props.editableData;
     let courseId = data._id;
     const { user } = React.useContext(AuthContext);
+    const employerId = React.useState(data.employerId);
     const [courseName, setCourseName] = React.useState(data.course_name);
-    const [degreeType, setDegreeType] = React.useState(data.degree_type);
+    const [degreeType, setDegreeType] = React.useState([]);
     const [interest, setInterest] = React.useState(data.interest);
     const [institution, setInstitution] = React.useState(data.institution);
-    const [language, setLanguage] = React.useState(data.language);
+    const [language, setLanguage] = React.useState([]);
     const [delivery, setDelivery] = React.useState(data.delivery);
     const [location, setLocation] = React.useState(data.location);
     const [duration, setDuration] = React.useState(data.duration);
@@ -91,10 +105,40 @@ export default function UpdateCourse(props) {
         } else {
             setImage("");
         }
+    };    
+
+    const extractValuesAsString = (data) => {
+        // Extract _id values from each object using map()
+        const valueArray = data.map((item) => item.value);
+    
+        // Join _id values into a comma-separated string using join()
+        const valueString = valueArray.join(', ');
+    
+        return valueString;
     };
 
     const { mutateAsync: updateCourse, isLoading } = useMutation(
         async () => {
+            const upData = {
+                course_name: courseName,
+                degree_type: degreeType,
+                interest: interest,
+                institution: institution,
+                language: language,
+                delivery: delivery,
+                location: location,
+                duration: duration,
+                cost: cost,
+                link: link,
+                target: target,
+                logo: logo,
+                about: about,
+                overview: overview,
+                application_deadline: deadline,
+                start_date: startDate.toISOString().substring(0, 10),
+                tuition_and_fees: tuitionFee
+            };
+
             const formData = new FormData();
             const courseData = {
                 course_name: courseName,
@@ -118,11 +162,14 @@ export default function UpdateCourse(props) {
             for (const key in courseData) {
                 formData.append(key, courseData[key]);
             }
+            for (const key in courseData) {
+                formData.append(key, courseData[key]);
+            }
         
             try {
-                await CourseService.updateCourse(courseId, formData);
+                await CourseService.updateCourse(courseId, upData);
                 await props.coursesRefetch();
-                successNotify('Course successfully created!');
+                successNotify('Course successfully updated!');
                 props.setCourseModal(false);
             } catch (error) {
 
@@ -137,12 +184,39 @@ export default function UpdateCourse(props) {
                     );
                 } else {
                     await props.coursesRefetch();
-                    successNotify('Course successfully created!');
+                    successNotify('Course successfully updated!');
                     props.setCourseModal(false);
                 }
             }
         }
     );
+
+    useEffect(() => {
+        if (degreeOptions && Array.isArray(degreeOptions) && degreeOptions.length > 0 && data && data.degree_type) {
+            const degreeTypes = data.degree_type;
+            let targetValues = degreeTypes.split(',');
+            const trimmedValues = targetValues.map(part => part.trim());
+            // Use filter method to get only the objects with matching _id values
+            const filteredDegreeTypes = degreeOptions.filter(degreeOption => trimmedValues.includes(degreeOption.value));
+            
+            console.log('filteredDegreeTypes:', filteredDegreeTypes);
+            setDegreeType(filteredDegreeTypes);
+        }
+            
+    }, [degreeOptions]);
+    
+    useEffect(() => {
+        if (languageOptions && Array.isArray(languageOptions) && languageOptions.length > 0 && data && data.language)
+        {
+            const languageOption = data.language;
+            let targetValues = languageOption.split(',');
+            const trimmedValues = targetValues.map(part => part.trim());
+            // Use filter method to get only the objects with matching _id values
+            const filteredLanguages = languageOptions.filter(option => trimmedValues.includes(option.value));
+            setLanguage(filteredLanguages);
+        }
+            
+    }, [languageOptions]);
 
     function handleChangeCourseName(event) {
         if (event.target.value.length > 0) {
@@ -151,12 +225,13 @@ export default function UpdateCourse(props) {
         setCourseName(event.target.value);
     }
 
-    function handleChangeDegreeType(event) {
-        if (event.target.value.length > 0) {
-            setDegreeTypeError(false);
-        }
-        setDegreeType(event.target.value);
-    }
+    
+
+    const handleChangeDegreeType = (value) => {
+        setDegreeTypeError(false);
+        setDegreeType(value);
+        if (!value) return;
+    };
 
     function handleChangeInterest(event) {
         if (event.target.value.length > 0) {
@@ -170,14 +245,13 @@ export default function UpdateCourse(props) {
             setInstitutionError(false);
         }
         setInstitution(event.target.value);
-    }
+    }   
 
-    function handleChangeLanguage(event) {
-        if (event.target.value.length > 0) {
-            setLanguageError(false);
-        }
-        setLanguage(event.target.value);
-    }
+    const handleChangeLanguage = (value) => {
+        setLanguageError(false);
+        setLanguage(value);
+        if (!value) return;
+    };
 
     function handleChangeDelivery(event) {
         if (event.target.value.length > 0) {
@@ -256,15 +330,20 @@ export default function UpdateCourse(props) {
         setDeadline(event.target.value);
     }
 
+    function handleChangeStartDate(newValue) {
+        if (!newValue) {
+            setStartDateError(true); // Set error if start date is empty
+        } else {
+            setStartDateError(false); // Clear error if start date is provided
+        }
+        setStartDate(newValue);
+    }
+
     function handleChangeTuitionFee(event) {
         if (event.target.value.length > 0) {
             setTuitionFeeError(false);
         }
         setTuitionFee(event.target.value);
-    }
-
-    function handleChangeStartDate(newValue) {
-        setStartDate(newValue);
     }
 
     // function handleClose(event) {
@@ -279,7 +358,7 @@ export default function UpdateCourse(props) {
             setCourseNameError(true);
             alert('Please enter a valid course name.');
             return;
-        } else if (!degreeType) {
+        } else if (!degreeType || degreeType.length === 0) {
             setDegreeTypeError(true);
             alert('Please enter a valid degree type.');
             return;
@@ -291,7 +370,7 @@ export default function UpdateCourse(props) {
             setInstitutionError(true);
             alert('Please enter a valid institution name.');
             return;
-        } else if (!language) {
+        } else if (!language || language.length === 0) {
             setLanguageError(true);
             alert('Please select a language.');
             return;
@@ -335,34 +414,52 @@ export default function UpdateCourse(props) {
             setDeadlineError(true);
             alert('Please enter deadline.');
             return;
+        } else if (!startDate) {
+            setStartDateError(true);
+            alert('Please enter start date.');
+            return;
         } else if (!tuitionFee) {
             setTuitionFeeError(true);
             alert('Please enter tuition fee.');
             return;
         }
 
-        console.log('update coursedata', {
-            courseId,
-            courseName,
-            degreeType,
-            interest,
-            institution,
-            language,
-            delivery,
-            location,
-            duration,
-            cost,
-            link,
-            target,
-            logo,
-            about,
-            overview,
-            deadline,
-            startDate: startDate.toISOString().substring(0, 10),
-            tuitionFee
-        });
+        const formData = new FormData();
+        const degreeTypeString = degreeType ? extractValuesAsString(degreeType) : '';
+        const languageString = language ? extractValuesAsString(language) : '';
 
-        await updateCourse();
+        const courseData = {
+            course_name: courseName,
+            degree_type: degreeTypeString,
+            interest: interest,
+            institution: institution,
+            language: languageString,
+            delivery: delivery,
+            location: location,
+            duration: duration,
+            cost: cost,
+            link: link,
+            target: target,
+            logo: logo,
+            employerId: employerId,
+            about: about,
+            overview: overview,
+            application_deadline: deadline,
+            start_date: startDate.toISOString().substring(0, 10),
+            tuition_and_fees: tuitionFee
+        };
+        for (const key in courseData) {
+            formData.append(key, courseData[key]);
+        }
+    
+        try {
+            await CourseService.updateCourse(courseId, formData);
+            await props.coursesRefetch();
+            successNotify('Course successfully updated!');
+            props.setCourseModal(false);
+        } catch (error) {
+
+        }
     }
 
     return (
@@ -390,47 +487,29 @@ export default function UpdateCourse(props) {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel htmlFor="degreetype">
-                                Degree Type
-                            </InputLabel>
-                            <Select
-                                labelid="degreetype"
-                                id="degreetype"
-                                value={degreeType}
-                                error={degreeTypeError}
-                                label="Degree Type"
-                                onChange={handleChangeDegreeType}
-                            >
-                                <MenuItem
-                                    key='Certificate' 
-                                    value='Certificate'
-                                >
-                                    Certificate
-                                </MenuItem>
-                                <MenuItem
-                                    key='Post-grad Certificate' 
-                                    value='Post-grad Certificate'
-                                >
-                                    Post-grad Certificate
-                                </MenuItem>
-                                <MenuItem
-                                    key='Bachelors' 
-                                    value='Bachelors'
-                                >
-                                    Bachelors
-                                </MenuItem>
-                                <MenuItem
-                                    key='Master' 
-                                    value='Master'
-                                >
-                                    Master
-                                </MenuItem>
-                            </Select>
+                            <Autocomplete
+                                multiple
+                                options={degreeOptions}
+                                value={degreeType} // Use state variable for controlled value
+                                onChange={(event, newValue) => {
+                                    handleChangeDegreeType(newValue); // Update state when selection changes
+                                }}
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="outlined"
+                                        label="Degrees Type"
+                                        placeholder="Start typing..."
+                                    />
+                                )}
+                                isOptionEqualToValue={(option, value) => option.value === value.value}
+                            />
                             {!!degreeTypeError && (
-                                <FormHelperText error id="dept-error">
-                                    Please select a degree type
+                                <FormHelperText error id="degreetype-error">
+                                    Please select at least one degree type
                                 </FormHelperText>
-                            )}
+                            )}                            
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -469,34 +548,30 @@ export default function UpdateCourse(props) {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel htmlFor="language">Language</InputLabel>
-                            <Select
-                                labelid="language"
-                                id="language"
-                                value={language}
-                                error={languageError}
-                                label="Language"
-                                onChange={handleChangeLanguage}
-                            >
-                                <MenuItem
-                                    key='English' 
-                                    value='English'
-                                >
-                                    English
-                                </MenuItem>
-                                <MenuItem
-                                    key='French' 
-                                    value='French'
-                                >
-                                    French
-                                </MenuItem>
-                            </Select>
+                            <Autocomplete
+                                multiple
+                                options={languageOptions}
+                                value={language} // Use state variable for controlled value
+                                onChange={(event, newValue) => {
+                                    handleChangeLanguage(newValue); // Update state when selection changes
+                                }}
+                                getOptionLabel={(option) => option.label}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="outlined"
+                                        label="Language"
+                                        placeholder="Start typing..."
+                                    />
+                                )}
+                                isOptionEqualToValue={(option, value) => option.value === value.value}
+                            />
+                            {!!languageError && (
+                                <FormHelperText error id="language-error">
+                                    Please select language
+                                </FormHelperText>
+                            )}
                         </FormControl>
-                        {!!languageError && (
-                            <FormHelperText error id="language-error">
-                                Please select language
-                            </FormHelperText>
-                        )}
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
@@ -662,7 +737,7 @@ export default function UpdateCourse(props) {
                     <Grid item xs={12} md={6}>
                         <div style={{marginTop:'24px', textAlign:'center', border: '1px solid #ccc', borderRadius: '2px'}}>
                             {image && (
-                                <Image
+                                <img
                                 src={image}
                                 className='inline-block'
                                 alt="Preview"
@@ -708,20 +783,31 @@ export default function UpdateCourse(props) {
                                 </FormHelperText>
                             )}
                         </FormControl>
-                    </Grid>
+                    </Grid>                    
                     <Grid item xs={12} md={6}>
-                        <LocalizationProvider dateAdapter={AdapterDateFns}>
-                            <DesktopDatePicker
-                                variant="standard"
-                                label="Start Date"
-                                inputFormat="MM/dd/yyyy"
-                                value={startDate}
-                                onChange={handleChangeStartDate}
-                                renderInput={(params) => (
-                                    <Input {...params} />
-                                )}
-                            />
-                        </LocalizationProvider>
+                        <FormControl fullWidth error={startDateError}>
+                            <InputLabel htmlFor="start-date"></InputLabel>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DesktopDatePicker
+                                    variant="standard"
+                                    label="Start Date"
+                                    inputFormat="MM/dd/yyyy"
+                                    value={startDate}
+                                    onChange={handleChangeStartDate}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            id="start-date" // Ensure this ID matches the htmlFor attribute of the InputLabel
+                                            sx={{ width: '100%' }}
+                                            error={startDateError}
+                                        />
+                                    )}
+                                />
+                            </LocalizationProvider>
+                            {startDateError && (
+                                <FormHelperText>Please enter a valid start date</FormHelperText>
+                            )}
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <FormControl fullWidth>
